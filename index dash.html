@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CreatorDash</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', system_ui, sans-serif; }
+    .nav-item { transition: all 0.2s; }
+    .nav-item.active { background-color: #27272a; color: white; }
+    .section { display: none; }
+    .section.active { display: block; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col">
+      <div class="p-6 border-b border-zinc-800 flex items-center gap-3">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="20" fill="#6B21A8" fill-opacity="0.15"/>
+          <circle cx="24" cy="24" r="14" stroke="#A78BFA" stroke-width="3"/>
+          <path d="M12 24C12 18 16 14 24 14C32 14 36 18 36 24C36 30 32 34 24 34C16 34 12 30 12 24Z" stroke="#C026D3" stroke-width="3"/>
+          <path d="M18 18 Q24 14 30 18" stroke="#A78BFA" stroke-width="2" stroke-opacity="0.7"/>
+          <path d="M18 30 Q24 34 30 30" stroke="#A78BFA" stroke-width="2" stroke-opacity="0.7"/>
+          <text x="24" y="29" text-anchor="middle" font-size="18" font-weight="bold" fill="#A78BFA">$</text>
+          <path d="M32 14 L38 10 L38 18 Z" fill="#C026D3"/>
+          <path d="M35 12 L41 8" stroke="#A78BFA" stroke-width="2"/>
+        </svg>
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">CreatorDash</h1>
+      </div>
+
+      <nav class="flex-1 p-4 space-y-1">
+        <a onclick="showSection('overview')" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer"><i class="fa-solid fa-house w-5"></i> <span id="menu-overview"></span></a>
+        <a onclick="showSection('ingresos')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-zinc-800"><i class="fa-solid fa-dollar-sign w-5"></i> <span id="menu-ingresos"></span></a>
+        <a onclick="showSection('deals')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-zinc-800"><i class="fa-solid fa-handshake w-5"></i> <span id="menu-deals"></span></a>
+        <a onclick="showSection('calculadora')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-zinc-800"><i class="fa-solid fa-calculator w-5"></i> <span id="menu-calculadora"></span></a>
+        <a onclick="showSection('roi')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-zinc-800"><i class="fa-solid fa-chart-line w-5"></i> <span id="menu-roi"></span></a>
+        <a onclick="showSection('impuestos')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-zinc-800"><i class="fa-solid fa-receipt w-5"></i> <span id="menu-impuestos"></span></a>
+        <a onclick="showSection('estrategias')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-zinc-800"><i class="fa-solid fa-lightbulb w-5"></i> <span id="menu-estrategias"></span></a>
+        <a onclick="showSection('feedback')" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer hover:bg-zinc-800"><i class="fa-solid fa-comment-dots w-5"></i> <span id="menu-feedback"></span></a>
+      </nav>
+
+      <div class="p-4 border-t border-zinc-800">
+        <button onclick="openNewDealModal()" class="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2">
+          <i class="fa-solid fa-plus"></i> <span id="btn-nuevo-deal"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+      <div class="border-b border-zinc-800 bg-zinc-900 px-8 py-5 flex justify-between items-center">
+        <h2 id="page-title" class="text-2xl font-semibold"></h2>
+        <div class="flex items-center gap-4">
+          <select id="language-select" onchange="changeLanguage()" class="bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2 text-sm">
+            <option value="es">Español</option>
+            <option value="pt">Português</option>
+          </select>
+          <button onclick="exportToPDF()" class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 px-5 py-2 rounded-2xl text-sm font-medium">
+            <i class="fa-solid fa-file-pdf"></i> Exportar PDF
+          </button>
+          <div class="w-9 h-9 bg-violet-600 rounded-2xl flex items-center justify-center font-semibold">S</div>
+        </div>
+      </div>
+
+      <!-- OVERVIEW -->
+      <div id="overview" class="section active p-8">
+        <h3 id="welcome-text" class="text-xl font-medium mb-6"></h3>
+        <div class="grid grid-cols-4 gap-6 mb-8">
+          <div class="bg-zinc-900 rounded-3xl p-6"><p id="card-tiktok-views-label" class="text-zinc-400 text-sm"></p><p id="tiktok-views" class="text-4xl font-bold mt-2">2.4M</p></div>
+          <div class="bg-zinc-900 rounded-3xl p-6"><p id="card-tiktok-completion-label" class="text-zinc-400 text-sm"></p><p id="tiktok-completion" class="text-4xl font-bold mt-2">68%</p></div>
+          <div class="bg-zinc-900 rounded-3xl p-6"><p id="card-youtube-views-label" class="text-zinc-400 text-sm"></p><p id="youtube-views" class="text-4xl font-bold mt-2">1.8M</p></div>
+          <div class="bg-zinc-900 rounded-3xl p-6"><p id="card-engagement-label" class="text-zinc-400 text-sm"></p><p id="engagement-rate" class="text-4xl font-bold mt-2">4.8%</p></div>
+        </div>
+        <div class="bg-zinc-900 rounded-3xl p-6"><h4 id="grafico-engagement-titulo" class="font-semibold mb-4"></h4><canvas id="engagementChart" height="110"></canvas></div>
+      </div>
+
+      <!-- INGRESOS -->
+      <div id="ingresos" class="section p-8">
+        <h3 id="title-ingresos" class="text-2xl font-semibold mb-6"></h3>
+        <div class="bg-zinc-900 rounded-3xl overflow-hidden">
+          <table class="w-full"><thead class="bg-zinc-800"><tr><th class="text-left p-6">Fecha</th><th class="text-left p-6">Concepto</th><th class="text-left p-6">Monto (USD)</th><th class="w-12"></th></tr></thead>
+          <tbody id="body-ingresos" class="divide-y divide-zinc-800"></tbody></table>
+        </div>
+        <button onclick="agregarIngreso()" class="mt-6 flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-2xl"><i class="fa-solid fa-plus"></i> Agregar ingreso</button>
+      </div>
+
+      <!-- BRAND DEALS -->
+      <div id="deals" class="section p-8">
+        <div class="flex justify-between items-center mb-6"><h3 id="title-deals" class="text-2xl font-semibold"></h3>
+        <button onclick="conectarYoutube()" class="bg-gradient-to-r from-red-500 to-red-600 px-6 py-3 rounded-2xl font-semibold flex items-center gap-2"><i class="fa-brands fa-youtube"></i> <span id="btn-conectar-youtube"></span></button></div>
+        <div class="bg-zinc-900 rounded-3xl overflow-hidden">
+          <table class="w-full" id="tabla-deals"><thead class="bg-zinc-800"><tr><th class="text-left p-6" id="th-marca"></th><th class="text-left p-6" id="th-plataforma"></th><th class="text-left p-6" id="th-monto"></th><th class="text-left p-6" id="th-estado"></th><th class="w-12"></th></tr></thead>
+          <tbody class="divide-y divide-zinc-800" id="body-deals"></tbody></table>
+        </div>
+      </div>
+
+      <!-- CALCULADORA -->
+      <div id="calculadora" class="section p-8">
+        <h3 id="title-calculadora" class="text-2xl font-semibold mb-6"></h3>
+        <div class="bg-zinc-900 rounded-3xl p-12 text-center">
+          <i class="fa-solid fa-calculator text-7xl text-violet-400 mb-8"></i>
+          <p id="calculadora-texto" class="text-xl font-medium mb-8"></p>
+          <a href="https://calculadora-creatorly-otsfgh2bu.vercel.app" target="_blank" class="inline-flex items-center gap-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 px-10 py-5 rounded-3xl text-xl font-semibold">Abrir Calculadora de Tarifas</a>
+        </div>
+      </div>
+
+      <!-- ROI -->
+      <div id="roi" class="section p-8">
+        <h3 id="title-roi" class="text-2xl font-semibold mb-6"></h3>
+        <div class="grid grid-cols-3 gap-6">
+          <div class="bg-zinc-900 rounded-3xl p-6 text-center"><p class="text-emerald-400 text-sm">ROI Promedio</p><p class="text-5xl font-bold mt-2">4.8x</p></div>
+          <div class="bg-zinc-900 rounded-3xl p-6 text-center"><p class="text-violet-400 text-sm">Mejor Plataforma</p><p class="text-5xl font-bold mt-2">TikTok</p></div>
+          <div class="bg-zinc-900 rounded-3xl p-6 text-center"><p class="text-amber-400 text-sm">Mejor Formato</p><p class="text-5xl font-bold mt-2">Reels</p></div>
+        </div>
+      </div>
+
+      <!-- IMPUESTOS -->
+      <div id="impuestos" class="section p-8">
+        <h3 id="title-impuestos" class="text-2xl font-semibold mb-6"></h3>
+        <div class="bg-zinc-900 rounded-3xl p-8">
+          <div class="flex justify-between"><span>Ingresos brutos</span><span class="font-semibold">$2,847</span></div>
+          <div class="mt-8 space-y-4">
+            <div class="flex justify-between"><span>Impuestos estimados</span><span>$427</span></div>
+            <div class="flex justify-between"><span>Gastos deducibles</span><span class="text-emerald-400">-$210</span></div>
+            <div class="border-t pt-4 flex justify-between font-bold"><span>Neto a pagar</span><span>$217</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTRATEGIAS -->
+      <div id="estrategias" class="section p-8">
+        <h3 id="title-estrategias" class="text-3xl font-semibold mb-2"></h3>
+        <p id="subtitle-estrategias" class="text-zinc-400 mb-8"></p>
+        <div class="grid grid-cols-3 gap-6">
+          <div class="bg-zinc-900 rounded-3xl p-6"><div class="text-4xl mb-4">📱</div><h4 class="font-semibold">Live Commerce en TikTok</h4><p class="text-zinc-400 text-sm mt-2">Ejemplo: R$52.000 en 3 horas</p></div>
+          <div class="bg-zinc-900 rounded-3xl p-6"><div class="text-4xl mb-4">🤖</div><h4 class="font-semibold">IA para contenido viral</h4><p class="text-zinc-400 text-sm mt-2">Crea 10x más rápido</p></div>
+          <div class="bg-zinc-900 rounded-3xl p-6"><div class="text-4xl mb-4">💰</div><h4 class="font-semibold">Brand Deals automáticos</h4><p class="text-zinc-400 text-sm mt-2">De visitas a pagos</p></div>
+        </div>
+      </div>
+
+      <!-- SUGERIR MEJORAS -->
+      <div id="feedback" class="section p-8">
+        <h3 id="title-feedback" class="text-3xl font-semibold mb-2"></h3>
+        <p id="subtitle-feedback" class="text-zinc-400 mb-8"></p>
+        <div class="bg-zinc-900 rounded-3xl p-8">
+          <select id="feedback-categoria" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4"><option>💡 Idea / Mejora</option><option>🐞 Reportar error</option><option>🚀 Nueva funcionalidad</option></select>
+          <textarea id="feedback-text" rows="5" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl p-5" placeholder="Cuéntanos qué mejorar..."></textarea>
+          <button onclick="enviarFeedback()" class="mt-6 w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 py-4 rounded-2xl font-semibold">Enviar sugerencia</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="newDealModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+    <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-lg">
+      <h3 id="modal-title" class="text-2xl font-semibold mb-6"></h3>
+      <input id="modal-marca" type="text" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4" placeholder="Nombre de la marca">
+      <select id="modal-plataforma" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-4"><option>Instagram</option><option>TikTok</option><option>YouTube</option></select>
+      <input id="modal-monto" type="number" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 mb-6" placeholder="Monto en USD">
+      <button onclick="saveNewDeal()" id="modal-btn-guardar" class="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 py-4 rounded-2xl font-semibold mb-3"></button>
+      <button onclick="closeModal()" id="modal-btn-cancelar" class="w-full py-4 text-zinc-400"></button>
+    </div>
+  </div>
+
+  <script>
+    let deals = JSON.parse(localStorage.getItem('deals')) || [{marca:"Nike Latam",plataforma:"YouTube",monto:3200,estado:"Pagado"},{marca:"Samsung Brasil",plataforma:"Instagram",monto:1850,estado:"Pendiente"}];
+    let ingresos = JSON.parse(localStorage.getItem('ingresos')) || [{fecha:"27/03",concepto:"Brand Deal Nike",monto:1200},{fecha:"25/03",concepto:"TikTok Live",monto:850}];
+    let engagementChartInstance = null;
+    let currentLang = 'es';
+
+    const translations = {
+      es: {
+        menuOverview:"Overview", menuIngresos:"Ingresos", menuDeals:"Brand Deals", menuCalculadora:"Calculadora de Tarifas",
+        menuRoi:"ROI de Contenido", menuImpuestos:"Impuestos y Gastos", menuEstrategias:"Estrategias de Monetización",
+        menuFeedback:"Sugerir Mejoras", btnNuevoDeal:"Nuevo Brand Deal", btnConectarYoutube:"Conectar YouTube",
+        cardTiktokViews:"TikTok Promedio de Vistas", cardTiktokCompletion:"Tasa de Finalización",
+        cardYoutubeViews:"Vistas YouTube", cardEngagement:"Tasa de Engagement",
+        graficoEngagementTitulo:"Tendencia de Engagement", titleDeals:"Brand Deals",
+        titleIngresos:"Ingresos", titleCalculadora:"Calculadora de Tarifas",
+        titleRoi:"ROI de Contenido", titleImpuestos:"Impuestos y Gastos",
+        titleEstrategias:"Estrategias de Monetización 2025", subtitleEstrategias:"Ideas probadas para creadores de Latam y Brasil",
+        titleFeedback:"Sugerir Mejoras a CreatorDash", subtitleFeedback:"Tu opinión nos ayuda a mejorar",
+        modalTitle:"Nuevo Brand Deal", modalGuardar:"Guardar Deal", modalCancelar:"Cancelar",
+        calculadoraTexto:"La calculadora que usan miles de creadores"
+      },
+      pt: {
+        menuOverview:"Visão Geral", menuIngresos:"Receitas", menuDeals:"Brand Deals", menuCalculadora:"Calculadora de Tarifas",
+        menuRoi:"ROI de Conteúdo", menuImpuestos:"Impostos e Despesas", menuEstrategias:"Estratégias de Monetização",
+        menuFeedback:"Sugerir Melhorias", btnNuevoDeal:"Novo Brand Deal", btnConectarYoutube:"Conectar YouTube",
+        cardTiktokViews:"TikTok Média de Visualizações", cardTiktokCompletion:"Taxa de Conclusão",
+        cardYoutubeViews:"Visualizações YouTube", cardEngagement:"Taxa de Engajamento",
+        graficoEngagementTitulo:"Tendência de Engajamento", titleDeals:"Brand Deals",
+        titleIngresos:"Receitas", titleCalculadora:"Calculadora de Tarifas",
+        titleRoi:"ROI de Conteúdo", titleImpuestos:"Impostos e Despesas",
+        titleEstrategias:"Estratégias de Monetização 2025", subtitleEstrategias:"Ideias comprovadas para criadores da Latam e Brasil",
+        titleFeedback:"Sugerir Melhorias ao CreatorDash", subtitleFeedback:"Sua opinião nos ajuda a melhorar",
+        modalTitle:"Novo Brand Deal", modalGuardar:"Salvar Deal", modalCancelar:"Cancelar",
+        calculadoraTexto:"A calculadora que milhares de criadores usam"
+      }
+    };
+
+    function renderDeals() {
+      const tbody = document.getElementById('body-deals');
+      tbody.innerHTML = '';
+      deals.forEach((deal,i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="p-6">${deal.marca}</td><td class="p-6">${deal.plataforma}</td><td class="p-6 font-semibold">$${deal.monto}</td><td class="p-6"><span class="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-xs">${deal.estado}</span></td><td class="p-6"><button onclick="eliminarDeal(${i})" class="text-red-400"><i class="fa-solid fa-trash"></i></button></td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderIngresos() {
+      const tbody = document.getElementById('body-ingresos');
+      tbody.innerHTML = '';
+      ingresos.forEach((ing,i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="p-6">${ing.fecha}</td><td class="p-6">${ing.concepto}</td><td class="p-6 font-semibold">$${ing.monto}</td><td class="p-6"><button onclick="eliminarIngreso(${i})" class="text-red-400"><i class="fa-solid fa-trash"></i></button></td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function showSection(section) {
+      if (engagementChartInstance) engagementChartInstance.destroy();
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(section).classList.add('active');
+      updateAllTexts();
+      if (section === 'overview') createEngagementChart();
+      if (section === 'ingresos') renderIngresos();
+      if (section === 'deals') renderDeals();
+    }
+
+    function updateAllTexts() {
+      const t = translations[currentLang];
+      document.getElementById('menu-overview').textContent = t.menuOverview;
+      document.getElementById('menu-ingresos').textContent = t.menuIngresos;
+      document.getElementById('menu-deals').textContent = t.menuDeals;
+      document.getElementById('menu-calculadora').textContent = t.menuCalculadora;
+      document.getElementById('menu-roi').textContent = t.menuRoi;
+      document.getElementById('menu-impuestos').textContent = t.menuImpuestos;
+      document.getElementById('menu-estrategias').textContent = t.menuEstrategias;
+      document.getElementById('menu-feedback').textContent = t.menuFeedback;
+      document.getElementById('btn-nuevo-deal').textContent = t.btnNuevoDeal;
+      document.getElementById('btn-conectar-youtube').textContent = t.btnConectarYoutube;
+      document.getElementById('welcome-text').textContent = currentLang === 'es' ? 'Bienvenido de nuevo, Sebastian' : 'Bem-vindo de volta, Sebastian';
+      document.getElementById('card-tiktok-views-label').textContent = t.cardTiktokViews;
+      document.getElementById('card-tiktok-completion-label').textContent = t.cardTiktokCompletion;
+      document.getElementById('card-youtube-views-label').textContent = t.cardYoutubeViews;
+      document.getElementById('card-engagement-label').textContent = t.cardEngagement;
+      document.getElementById('grafico-engagement-titulo').textContent = t.graficoEngagementTitulo;
+      document.getElementById('title-deals').textContent = t.titleDeals;
+      document.getElementById('title-ingresos').textContent = t.titleIngresos;
+      document.getElementById('title-calculadora').textContent = t.titleCalculadora;
+      document.getElementById('title-roi').textContent = t.titleRoi;
+      document.getElementById('title-impuestos').textContent = t.titleImpuestos;
+      document.getElementById('title-estrategias').textContent = t.titleEstrategias;
+      document.getElementById('subtitle-estrategias').textContent = t.subtitleEstrategias;
+      document.getElementById('title-feedback').textContent = t.titleFeedback;
+      document.getElementById('subtitle-feedback').textContent = t.subtitleFeedback;
+      document.getElementById('modal-title').textContent = t.modalTitle;
+      document.getElementById('modal-btn-guardar').textContent = t.modalGuardar;
+      document.getElementById('modal-btn-cancelar').textContent = t.modalCancelar;
+      document.getElementById('calculadora-texto').textContent = t.calculadoraTexto;
+    }
+
+    function changeLanguage() {
+      currentLang = document.getElementById('language-select').value;
+      updateAllTexts();
+    }
+
+    function createEngagementChart() {
+      engagementChartInstance = new Chart(document.getElementById('engagementChart'), {
+        type: 'line',
+        data: { labels: ['Sem 1','Sem 2','Sem 3','Sem 4'], datasets: [{ label: 'Engagement', data: [3.2,4.1,4.5,5.2], borderColor: '#ff0050', tension: 0.3 }] },
+        options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#27272a' } } } }
+      });
+    }
+
+    function openNewDealModal() {
+      document.getElementById('newDealModal').classList.remove('hidden');
+      document.getElementById('newDealModal').classList.add('flex');
+    }
+    function closeModal() {
+      document.getElementById('newDealModal').classList.add('hidden');
+      document.getElementById('newDealModal').classList.remove('flex');
+    }
+    function saveNewDeal() {
+      const marca = document.getElementById('modal-marca').value || 'Nueva Marca';
+      const plataforma = document.getElementById('modal-plataforma').value;
+      const monto = parseFloat(document.getElementById('modal-monto').value) || 1000;
+      deals.push({marca, plataforma, monto, estado: 'Pendiente'});
+      localStorage.setItem('deals', JSON.stringify(deals));
+      closeModal();
+      renderDeals();
+      showSection('deals');
+    }
+    function eliminarDeal(i) { deals.splice(i,1); localStorage.setItem('deals', JSON.stringify(deals)); renderDeals(); }
+
+    function agregarIngreso() {
+      const fecha = prompt("Fecha (dd/mm):") || "28/03";
+      const concepto = prompt("Concepto:") || "Nuevo ingreso";
+      const monto = parseFloat(prompt("Monto USD:")) || 500;
+      ingresos.unshift({fecha, concepto, monto});
+      localStorage.setItem('ingresos', JSON.stringify(ingresos));
+      renderIngresos();
+    }
+    function eliminarIngreso(i) { ingresos.splice(i,1); localStorage.setItem('ingresos', JSON.stringify(ingresos)); renderIngresos(); }
+
+    function enviarFeedback() {
+      alert(currentLang === 'es' ? '✅ Sugerencia enviada. ¡Gracias!' : '✅ Sugestão enviada. Obrigado!');
+      document.getElementById('feedback-text').value = '';
+    }
+
+    function exportToPDF() {
+      const element = document.querySelector('.section.active');
+      html2pdf().set({margin:15, filename:`CreatorDash_${currentLang}.pdf`, html2canvas:{scale:2}}).from(element).save();
+    }
+
+    function conectarYoutube() {
+      const btn = event.currentTarget;
+      btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Conectando...`;
+      setTimeout(() => { renderDeals(); btn.innerHTML = `<i class="fa-brands fa-youtube"></i> Conectado ✓`; }, 1200);
+    }
+
+    window.onload = () => {
+      renderDeals();
+      renderIngresos();
+      showSection('overview');
+    };
+  </script>
+</body>
+</html>
