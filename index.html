@@ -6,13 +6,14 @@
   <title>Calculadora de Tarifas • Creadores Latam & Brasil</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <style>body { font-family: 'Inter', system_ui, sans-serif; }</style>
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen">
   <div class="max-w-2xl mx-auto py-12 px-6">
 
     <div class="text-center mb-10">
       <h1 class="text-4xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">Calculadora de Tarifas</h1>
-      <p id="subtitle" class="text-zinc-400 mt-2 text-lg">Calculadora realista para creadores de Latam y Brasil</p>
+      <p id="subtitle" class="text-zinc-400 mt-2 text-lg"></p>
     </div>
 
     <div class="flex justify-end mb-8">
@@ -22,24 +23,27 @@
       </select>
     </div>
 
-    <!-- Formulario (mismo que antes) -->
     <div class="bg-zinc-900 rounded-3xl p-8">
       <div class="space-y-6">
         <div>
-          <label id="label-nicho" class="block text-sm text-zinc-400 mb-2">Tipo de contenido / Nicho</label>
+          <label id="label-nicho" class="block text-sm text-zinc-400 mb-2"></label>
           <select id="nicho" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-lg"></select>
         </div>
+
         <div class="grid grid-cols-2 gap-6">
           <div>
-            <label id="label-plataforma" class="block text-sm text-zinc-400 mb-2">Plataforma principal</label>
+            <label id="label-plataforma" class="block text-sm text-zinc-400 mb-2"></label>
             <select id="plataforma" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-lg"></select>
           </div>
           <div>
-            <label id="label-seguidores" class="block text-sm text-zinc-400 mb-2">Seguidores aproximados</label>
+            <label id="label-seguidores" class="block text-sm text-zinc-400 mb-2"></label>
             <input id="seguidores" type="text" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-lg" placeholder="Ej: 50.000">
           </div>
         </div>
-        <button onclick="calcularTarifa()" class="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 py-5 rounded-2xl font-semibold text-xl">Calcular mi tarifa</button>
+
+        <button onclick="calcularTarifa()" class="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 py-5 rounded-2xl font-semibold text-xl">
+          Calcular mi tarifa
+        </button>
       </div>
     </div>
 
@@ -49,8 +53,12 @@
       <p id="resultado-sub" class="text-emerald-400 mt-2"></p>
 
       <div class="flex justify-center gap-4 mt-10">
-        <button onclick="compartirInstagram()" class="flex items-center gap-3 bg-gradient-to-r from-pink-500 to-purple-500 px-8 py-4 rounded-2xl font-semibold"><i class="fa-brands fa-instagram"></i> Compartir en Instagram</button>
-        <button onclick="compartirWhatsApp()" class="flex items-center gap-3 bg-green-500 px-8 py-4 rounded-2xl font-semibold"><i class="fa-brands fa-whatsapp"></i> Compartir por WhatsApp</button>
+        <button onclick="compartirInstagram()" class="flex items-center gap-3 bg-gradient-to-r from-pink-500 to-purple-500 px-8 py-4 rounded-2xl font-semibold">
+          <i class="fa-brands fa-instagram"></i> Compartir en Instagram
+        </button>
+        <button onclick="compartirWhatsApp()" class="flex items-center gap-3 bg-green-500 px-8 py-4 rounded-2xl font-semibold">
+          <i class="fa-brands fa-whatsapp"></i> Compartir por WhatsApp
+        </button>
       </div>
 
       <button onclick="guardarResultado()" class="mt-6 text-zinc-400 hover:text-white flex items-center gap-2 mx-auto">
@@ -59,7 +67,7 @@
 
       <!-- CTA a la Landing -->
       <div class="mt-12 bg-gradient-to-r from-violet-900/30 to-fuchsia-900/30 border border-violet-400/30 rounded-3xl p-8">
-        <p class="text-xl font-medium">¿Querés manejar todos tus brand deals de forma profesional?</p>
+        <p id="cta-texto" class="text-xl font-medium"></p>
         <a href="https://creatordash-landing.vercel.app" target="_blank" 
            class="mt-6 block w-full bg-white text-zinc-900 py-5 rounded-2xl font-semibold text-xl hover:scale-105 transition">
           Probar CreatorDash GRATIS 14 días →
@@ -69,12 +77,94 @@
   </div>
 
   <script>
-    // (El resto del script es el mismo que te pasé antes, solo con el CTA corregido)
     let currentLang = 'es';
-    const translations = { /* ... mismo translations que antes ... */ };
-    // ... (populateSelects, changeLanguage, calcularTarifa, etc. igual que la última versión)
 
-    window.onload = () => changeLanguage();
+    const translations = {
+      es: {
+        subtitle: "Calculadora realista para creadores de Latam y Brasil",
+        labelNicho: "Tipo de contenido / Nicho",
+        labelPlataforma: "Plataforma principal",
+        labelSeguidores: "Seguidores aproximados",
+        nichos: ["Fitness & Bienestar","Moda & Lifestyle","Gaming","Finanzas Personales","Cocina","Belleza","Educación","Viajes","Tech","Otros"],
+        plataformas: ["Instagram","TikTok","YouTube","Twitter/X","Twitch"],
+        resultadoTexto: "Tu tarifa recomendada por colaboración es:",
+        resultadoSub: "Precio sugerido por una colaboración estándar (post + stories)",
+        ctaTexto: "¿Querés manejar todos tus brand deals de forma profesional?"
+      },
+      pt: {
+        subtitle: "Calculadora realista para criadores da Latam e Brasil",
+        labelNicho: "Tipo de conteúdo / Nicho",
+        labelPlataforma: "Plataforma principal",
+        labelSeguidores: "Seguidores aproximados",
+        nichos: ["Fitness & Bem-Estar","Moda & Lifestyle","Gaming","Finanças Pessoais","Culinária","Beleza","Educação","Viagens","Tech","Outros"],
+        plataformas: ["Instagram","TikTok","YouTube","Twitter/X","Twitch"],
+        resultadoTexto: "Sua tarifa recomendada por collab é:",
+        resultadoSub: "Preço sugerido por uma collab padrão (post + stories)",
+        ctaTexto: "Quer gerenciar todos os seus brand deals de forma profissional?"
+      }
+    };
+
+    function populateSelects() {
+      const t = translations[currentLang];
+      // Nicho
+      const nichoSelect = document.getElementById('nicho');
+      nichoSelect.innerHTML = '<option value="">Selecciona un nicho...</option>';
+      t.nichos.forEach(n => {
+        const opt = document.createElement('option');
+        opt.value = n;
+        opt.textContent = n;
+        nichoSelect.appendChild(opt);
+      });
+      // Plataforma
+      const plataformaSelect = document.getElementById('plataforma');
+      plataformaSelect.innerHTML = '<option value="">Selecciona una plataforma...</option>';
+      t.plataformas.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = p;
+        plataformaSelect.appendChild(opt);
+      });
+    }
+
+    function changeLanguage() {
+      currentLang = document.getElementById('language-select').value;
+      const t = translations[currentLang];
+      document.getElementById('subtitle').textContent = t.subtitle;
+      document.getElementById('label-nicho').textContent = t.labelNicho;
+      document.getElementById('label-plataforma').textContent = t.labelPlataforma;
+      document.getElementById('label-seguidores').textContent = t.labelSeguidores;
+      document.getElementById('cta-texto').textContent = t.ctaTexto;
+      populateSelects();
+    }
+
+    function calcularTarifa() {
+      const seguidores = parseInt(document.getElementById('seguidores').value) || 50000;
+      let tarifa = Math.round((seguidores / 1000) * 8);
+      if (tarifa < 300) tarifa = 300;
+      if (tarifa > 4500) tarifa = 4500;
+
+      const t = translations[currentLang];
+      document.getElementById('resultado-texto').innerHTML = `${t.resultadoTexto} <span class="text-5xl font-bold text-emerald-400">$${tarifa} USD</span>`;
+      document.getElementById('resultado-sub').textContent = t.resultadoSub;
+
+      document.getElementById('resultado').classList.remove('hidden');
+      document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function compartirInstagram() {
+      alert(currentLang === 'es' ? '¡Captura la pantalla y compártela en Instagram! 📸' : 'Tire print e compartilhe no Instagram! 📸');
+    }
+    function compartirWhatsApp() {
+      const msg = currentLang === 'es' ? 'Mirá cuánto debería cobrar por esta colaboración 👀' : 'Olha quanto eu deveria cobrar por essa collab 👀';
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+    function guardarResultado() {
+      alert(currentLang === 'es' ? 'Captura la pantalla o usa la herramienta de recorte 📸' : 'Tire print da tela ou use a ferramenta de recorte 📸');
+    }
+
+    window.onload = () => {
+      changeLanguage();
+    };
   </script>
 </body>
 </html>
