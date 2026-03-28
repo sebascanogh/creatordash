@@ -20,7 +20,6 @@
       <p id="subtitle" class="text-zinc-400 mt-2 text-lg"></p>
     </div>
 
-    <!-- Language selector -->
     <div class="flex justify-end mb-8">
       <select id="language-select" onchange="changeLanguage()" class="bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-2 text-sm">
         <option value="es">Español</option>
@@ -28,7 +27,6 @@
       </select>
     </div>
 
-    <!-- Formulario -->
     <div class="bg-zinc-900 rounded-3xl p-8">
       <div class="space-y-6">
         <div>
@@ -71,13 +69,11 @@
         <i class="fa-solid fa-download"></i> Guardar resultado como imagen
       </button>
 
-      <!-- Testimonial -->
       <div class="mt-12 border-t border-zinc-700 pt-8">
         <p class="text-zinc-400 italic">"Usé la calculadora y me di cuenta que estaba cobrando 40% menos de lo que valgo. Ya cerré 3 deals este mes."</p>
         <p class="text-sm text-violet-400 mt-3">- @luciana_fit (México)</p>
       </div>
 
-      <!-- CTA fuerte -->
       <div class="mt-12 bg-gradient-to-r from-violet-900/30 to-fuchsia-900/30 border border-violet-400/30 rounded-3xl p-8">
         <p id="cta-texto" class="text-xl font-medium"></p>
         <a href="https://creatordash.vercel.app" target="_blank" class="mt-6 block w-full bg-white text-zinc-900 py-5 rounded-2xl font-semibold text-xl hover:scale-105 transition">
@@ -99,8 +95,7 @@
         nichos: ["Fitness & Bienestar","Moda & Lifestyle","Gaming","Finanzas Personales","Cocina","Belleza","Educación","Viajes","Tech","Otros"],
         plataformas: ["Instagram","TikTok","YouTube","Twitter/X","Twitch"],
         resultadoTexto: "Tu tarifa recomendada por colaboración es:",
-        ctaTexto: "¿Querés manejar todos tus brand deals de forma profesional?",
-        guardar: "Guardar resultado como imagen"
+        ctaTexto: "¿Querés manejar todos tus brand deals de forma profesional?"
       },
       pt: {
         subtitle: "Calculadora realista para criadores da Latam e Brasil",
@@ -110,10 +105,32 @@
         nichos: ["Fitness & Bem-Estar","Moda & Lifestyle","Gaming","Finanças Pessoais","Culinária","Beleza","Educação","Viagens","Tech","Outros"],
         plataformas: ["Instagram","TikTok","YouTube","Twitter/X","Twitch"],
         resultadoTexto: "Sua tarifa recomendada por collab é:",
-        ctaTexto: "Quer gerenciar todos os seus brand deals de forma profissional?",
-        guardar: "Salvar resultado como imagem"
+        ctaTexto: "Quer gerenciar todos os seus brand deals de forma profissional?"
       }
     };
+
+    function populateSelects() {
+      const t = translations[currentLang];
+      // Nicho
+      const nichoSelect = document.getElementById('nicho');
+      nichoSelect.innerHTML = '';
+      t.nichos.forEach(n => {
+        const opt = document.createElement('option');
+        opt.value = n;
+        opt.textContent = n;
+        nichoSelect.appendChild(opt);
+      });
+
+      // Plataforma
+      const plataformaSelect = document.getElementById('plataforma');
+      plataformaSelect.innerHTML = '';
+      t.plataformas.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = p;
+        plataformaSelect.appendChild(opt);
+      });
+    }
 
     function changeLanguage() {
       currentLang = document.getElementById('language-select').value;
@@ -122,13 +139,12 @@
       document.getElementById('label-nicho').textContent = t.labelNicho;
       document.getElementById('label-plataforma').textContent = t.labelPlataforma;
       document.getElementById('label-seguidores').textContent = t.labelSeguidores;
+      populateSelects();
     }
 
     function calcularTarifa() {
-      // Lógica simplificada pero realista
       const seguidores = parseInt(document.getElementById('seguidores').value) || 50000;
-      let tarifa = Math.round((seguidores / 1000) * 8); // fórmula base ajustada Latam
-
+      let tarifa = Math.round((seguidores / 1000) * 8);
       if (tarifa < 300) tarifa = 300;
       if (tarifa > 4500) tarifa = 4500;
 
@@ -142,22 +158,15 @@
       document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
     }
 
-    function compartirInstagram() {
-      alert(currentLang === 'es' ? '¡Captura la pantalla y compártela en Instagram! 📸' : 'Tire print e compartilhe no Instagram! 📸');
-    }
-
+    function compartirInstagram() { alert(currentLang === 'es' ? '¡Captura la pantalla y compártela en Instagram! 📸' : 'Tire print e compartilhe no Instagram! 📸'); }
     function compartirWhatsApp() {
-      const mensaje = currentLang === 'es' ? 
-        'Mirá cuánto debería cobrar por esta colaboración 👀' : 
-        'Olha quanto eu deveria cobrar por essa collab 👀';
-      window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
+      const msg = currentLang === 'es' ? 'Mirá cuánto debería cobrar por esta colaboración 👀' : 'Olha quanto eu deveria cobrar por essa collab 👀';
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
-
     function guardarResultado() {
-      alert(currentLang === 'es' ? 'Captura la pantalla o usa la herramienta de recorte del celular 📸' : 'Tire print da tela ou use a ferramenta de recorte do celular 📸');
+      alert(currentLang === 'es' ? 'Captura la pantalla o usa la herramienta de recorte 📸' : 'Tire print da tela ou use a ferramenta de recorte 📸');
     }
 
-    // Inicializar
     window.onload = () => {
       changeLanguage();
     };
